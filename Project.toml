@@ -1,0 +1,21 @@
+name = "NeutrinoMassModels"
+uuid = "e3195137-537d-4020-8fa0-ec5d1a4d9e77"
+version = "0.1.0"
+authors = ["Arnav Kapoor <kapoorarnav43@gmail.com>"]
+
+[deps]
+GLoBES = "367f8d2e-8d77-4eed-9bd4-73b32ac618fb"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+
+[compat]
+GLoBES = "0.1"
+LinearAlgebra = "1.10"
+Printf = "1.10"
+julia = "1.10"
+
+[extras]
+Test = "8dfed614-e22f-5e08-85e2-ed03e7a2286c"
+
+[targets]
+test = ["Test"]
