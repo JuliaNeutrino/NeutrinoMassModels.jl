@@ -492,17 +492,6 @@ function read_particle_string!(m::BSMModel, src::AbstractString)
     return m
 end
 
-# Rules {A->x, B->y} as a Dict; option names like PDG.IX are joined with dots
-function options(list)
-    d = Dict{Symbol,Any}()
-    for r in (list isa MExpr && list.head === :List ? list.args : Any[list])
-        is_call(r, :Rule) || continue
-        key = r.args[1] isa Symbol ? r.args[1] : Symbol(join(string.(r.args[1].args), "."))
-        d[key] = r.args[2]
-    end
-    return d
-end
-
 function set_index!(v::Vector, i::Integer, x)
     while length(v) < i
         push!(v, x)

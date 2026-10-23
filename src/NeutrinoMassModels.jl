@@ -10,7 +10,14 @@ module NeutrinoMassModels
 using LinearAlgebra, Printf
 using GLoBES
 using GLoBES:
-    MExpr, MNumber, parse_mathematica, is_call, complex_if_negative, G_FERMI, flavour
+    MExpr,
+    MNumber,
+    parse_mathematica,
+    is_call,
+    complex_if_negative,
+    G_FERMI,
+    flavour,
+    options
 using GLoBES: escape_latex, guess_symbol_latex, latex_number, symbol_latex, tex
 import GLoBES: latex
 
