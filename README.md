@@ -1,6 +1,6 @@
 # NeutrinoMassModels.jl
 
-Models of neutrino masses for [GLoBES.jl](https://github.com/arnavk23/GLoBES.jl): particle models written as Mathematica-style model files, their tree-level spectra, and neutrino mass mechanisms that turn model parameters into oscillation parameters. The package was split out of GLoBES.jl, which keeps the oscillation physics.
+Models of neutrino masses for [GLoBES.jl](https://github.com/JuliaNeutrino/GLoBES.jl): particle models written as Mathematica-style model files, their tree-level spectra, and neutrino mass mechanisms that turn model parameters into oscillation parameters. The package was split out of GLoBES.jl, which keeps the oscillation physics.
 
 ```julia
 using Pkg
