@@ -32,4 +32,6 @@ br_lfv(mech, values, :μ, :e)      # BR(μ → eγ); MEG II: 1.5e-13
 
 `latex(model)`, `latex(check_model(model))`, `latex(spectrum(...))` and `latex(neutrino_spectrum(...))` write the results for a GLoBES.jl `TexReport`.
 
+The notebook [`notebooks/01_neutrino_mass_models.ipynb`](notebooks/01_neutrino_mass_models.ipynb) goes through the package: the scotogenic model file, its checks and spectrum, Casas–Ibarra, μ → eγ against λ₅, the type-I seesaw and m_ββ ([open in Colab](https://colab.research.google.com/github/JuliaNeutrino/NeutrinoMassModels.jl/blob/main/notebooks/01_neutrino_mass_models.ipynb); choose **Runtime → Change runtime type → Julia** first).
+
 Tests: `julia --project=. test/runtests.jl`.
