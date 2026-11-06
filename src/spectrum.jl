@@ -390,7 +390,8 @@ end
     write_leshouches(file, model, values)
 
 Write parameter values to a LesHouches input file in the blocks of
-`parameters.m` and `SPheno.m` (`MINPAR`), for SPheno or for
+`parameters.m` (matrices such as `LesHouches -> YN` and entries such as
+`LesHouches -> {HDM, 5}`) and `SPheno.m` (`MINPAR`), for SPheno or for
 [`leshouches_values`](@ref).
 
 ```julia
@@ -401,15 +402,35 @@ function write_leshouches(file::AbstractString, m::BSMModel, values)
     vals = Dict{Symbol,Any}(Symbol(k) => v for (k, v) in pairs(values))
     open(file, "w") do io
         println(io, "# LesHouches input for model ", m.name, ", written by GLoBES.jl")
+        # Single entries, block => [(index, value, comment)]: MINPAR from SPheno.m,
+        # then the {block, index} positions of parameters.m
+        entries = Dict{String,Vector{Tuple{Int,Any,String}}}()
+        order = String[]
+        add_entry!(block, i, v, comment) = (
+            haskey(entries, block) || (entries[block] = []; push!(order, block));
+            push!(entries[block], (i, v, comment))
+        )
         if haskey(m.spheno, :MINPAR) && haskey(m.spheno, :BoundaryLowScaleInput)
             to_param =
                 Dict(e.args[2] => e.args[1] for e in m.spheno[:BoundaryLowScaleInput].args)
-            println(io, "Block MINPAR")
             for e in m.spheno[:MINPAR].args
                 p = get(to_param, e.args[2], nothing)
                 p !== nothing &&
                     haskey(vals, p) &&
-                    @printf(io, "%4d  %16.8E   # %s\n", e.args[1], real(vals[p]), e.args[2])
+                    add_entry!("MINPAR", e.args[1], real(vals[p]), string(e.args[2]))
+            end
+        end
+        for (p, info) in sort!(collect(m.parameter_info); by = first)
+            pos = get(info, :LesHouches, nothing)
+            pos !== nothing && is_call(pos, :List) && haskey(vals, p) || continue
+            add_entry!(uppercase(String(pos.args[1])), Int(pos.args[2]), vals[p], string(p))
+        end
+        for block in order, part in (real, imag)
+            part === imag && all(iszero ∘ imag ∘ (e -> e[2]), entries[block]) && continue
+            println(io, "Block ", part === imag ? "IM" : "", block)
+            for (i, v, comment) in entries[block]
+                part === imag && iszero(imag(v)) && continue
+                @printf(io, "%4d  %16.8E   # %s\n", i, part(v), comment)
             end
         end
         for (p, info) in sort!(collect(m.parameter_info); by = first)
