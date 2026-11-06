@@ -97,4 +97,24 @@ const SCOTO_VALUES = Dict{Symbol,Any}(
     write_leshouches(f, m, Dict(:Yn => Y))
     @test haskey(read_leshouches(f), "YN")
     @test leshouches_values(m, f)[:Yn] ≈ Y
+
+    # Single entries {block, index}, real and complex, round trip
+    m = scotogenic_model(
+        "ParameterDefinitions = {{Yn, {LesHouches -> YN}}, {lambda5, {LesHouches -> {HDM, 5}}}, {mEt2, {LesHouches -> {HDM, 6}}}, {lambda4, {LesHouches -> {HDM, 4}}}};",
+    )
+    write_leshouches(f, m, Dict(:Yn => Y, :lambda5 => 1e-9, :mEt2 => 1e6, :lambda4 => -0.1 + 0.2im))
+    blocks = read_leshouches(f)
+    @test blocks["HDM"][(5,)] == 1e-9 && blocks["HDM"][(4,)] == -0.1 + 0.2im
+    v = leshouches_values(m, f)
+    @test v[:lambda5] == 1e-9 && v[:mEt2] == 1e6 && v[:lambda4] == -0.1 + 0.2im && v[:Yn] ≈ Y
+
+    # MINPAR from SPheno.m and a parameters.m entry in the same block: one block
+    m = scotogenic_model(
+        "ParameterDefinitions = {{lambda5, {LesHouches -> {MINPAR, 5}}}};\nMINPAR = {{1, Lambda1IN}, {2, Lambda2IN}};\nBoundaryLowScaleInput = {{lambda1, Lambda1IN}, {lambda2, Lambda2IN}};",
+    )
+    write_leshouches(f, m, Dict(:lambda1 => 0.26, :lambda2 => 0.1, :lambda5 => 1e-9))
+    @test count(l -> startswith(l, "Block MINPAR"), eachline(f)) == 1
+    @test read_leshouches(f)["MINPAR"] == Dict((1,) => 0.26, (2,) => 0.1, (5,) => 1e-9)
+    v = leshouches_values(m, f)
+    @test v[:lambda1] == 0.26 && v[:lambda2] == 0.1 && v[:lambda5] == 1e-9
 end
